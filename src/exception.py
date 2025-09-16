@@ -4,6 +4,7 @@
 
 import logging
 import sys
+from src.logger import logging
 # error_detail -> present in sys library
 def error_message_detail(error,error_detail):
     # exc_tb will give exception occured at a line in any file
