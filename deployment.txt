@@ -1,2 +1,3 @@
+@@@@@@@@@@ DEPLOYMENT ON AWS @@@@@@@@@@@@@@@@@
 1. first make python.config file and code entry point inside .ebextensions folder
 2. make a file name appplication add code of our app.py into it also remove debug=True from the appplication.py file from entry point(__name__)
