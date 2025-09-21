@@ -15,35 +15,73 @@ def save_object(file_path,obj):
     except Exception as e:
         raise CustomException(e,sys)
     
-def evaluate_models(X_train,y_train,X_test,y_test,models,param):
+# def evaluate_models(X_train,y_train,X_test,y_test,models,param):
+#     try:
+#         report={}
+
+#         for i in range(len(list(models))):
+#             model=list(models.values())[i]
+#             model_name = list(models.keys())[i]
+#             para=param[model_name] # <-- Yahan sahi karo
+
+#             gs=GridSearchCV(model,para,cv=3)
+
+#             gs.fit(X_train,y_train)
+
+#             model.set_params(**gs.best_params_)
+#             model.fit(X_train,y_train)
+
+#             y_train_pred=model.predict(X_train)
+
+#             y_test_pred=model.predict(X_test)
+
+#             train_model_score=r2_score(y_train,y_train_pred)
+#             test_model_score=r2_score(y_test,y_test_pred)
+
+#             report[list(models.keys())[i]] = test_model_score
+
+#         return report
+        
+#     except Exception as e:
+#         raise CustomException(e,sys)
+
+def evaluate_models(X_train, y_train, X_test, y_test, models, param):
     try:
-        report={}
+        report = {}
 
-        for i in range(len(list(models))):
-            model=list(models.values())[i]
-            model_name = list(models.keys())[i]
-            para=param[model_name] # <-- Yahan sahi karo
+        for model_name, model in models.items():
+            try:
+                params = param.get(model_name, {})
 
-            gs=GridSearchCV(model,para,cv=3)
+                if params:  # Only run GridSearchCV if params exist
+                    gs = GridSearchCV(model, params, cv=3, n_jobs=-1)
+                    gs.fit(X_train, y_train)
+                    model.set_params(**gs.best_params_)
 
-            gs.fit(X_train,y_train)
+                # Fit model (even if no params)
+                model.fit(X_train, y_train)
 
-            model.set_params(**gs.best_params_)
-            model.fit(X_train,y_train)
+                # Predictions
+                y_train_pred = model.predict(X_train)
+                y_test_pred = model.predict(X_test)
 
-            y_train_pred=model.predict(X_train)
+                # Scores
+                train_score = r2_score(y_train, y_train_pred)
+                test_score = r2_score(y_test, y_test_pred)
 
-            y_test_pred=model.predict(X_test)
+                report[model_name] = test_score
 
-            train_model_score=r2_score(y_train,y_train_pred)
-            test_model_score=r2_score(y_test,y_test_pred)
+            except Exception as e:
+                logging.error(f"Model {model_name} failed: {e}")
+                continue  # Skip the failing model
 
-            report[list(models.keys())[i]] = test_model_score
+        if not report:
+            raise CustomException("No model was successfully trained.", sys)
 
         return report
-        
+
     except Exception as e:
-        raise CustomException(e,sys)
+        raise CustomException(e, sys)
 
 def load_object(file_path):
     try:

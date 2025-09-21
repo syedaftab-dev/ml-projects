@@ -11,9 +11,9 @@ application=Flask(__name__)
 app=application
 
 ##route for home page
-@app.route('/')
-def index():
-    return render_template('index.html')
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
 
 @app.route('/predictdata',methods=['GET','POST'])
 def predict_datapoint():
